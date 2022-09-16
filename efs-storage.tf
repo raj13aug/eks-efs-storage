@@ -39,9 +39,8 @@ resource "helm_release" "efs_csi_driver" {
   name       = "aws-efs-csi-driver"
   chart      = "aws-efs-csi-driver"
   repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver"
-  # this is app version 1.3.7
-  version   = "2.2.5"
-  namespace = "kube-system"
+  version    = "2.2.5"
+  namespace  = "kube-system"
 
   set {
     name  = "image.repository"
@@ -53,7 +52,7 @@ resource "helm_release" "efs_csi_driver" {
   }
   set {
     name  = "controller.serviceAccount.name"
-    value = "efs-csi-driver" #kubernetes_service_account.efs_csi_driver[0].metadata[0].name
+    value = kubernetes_service_account.efs_csi_driver[0].metadata[0].name
   }
 
 }
