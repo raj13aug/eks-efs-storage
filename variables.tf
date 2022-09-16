@@ -42,10 +42,7 @@ variable "aws_vpc_cidr" {
   type        = string
 }
 
-variable "base_domain" {
-  type        = string
-  description = "Domain name used for delegation"
-}
+
 
 variable "cloudwatch_log_group_retention_in_days" {
   description = "Number of days to retain log events"
