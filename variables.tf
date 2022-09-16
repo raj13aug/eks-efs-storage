@@ -81,9 +81,9 @@ variable "cluster_fqdn" {
 }
 
 
-variable "config" {
+/* variable "config" {
   type = object({
     aws_private_subnets = list(string)
     aws_public_subnets  = list(string)
   })
-}
+} */
