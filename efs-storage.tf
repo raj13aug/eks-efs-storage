@@ -69,15 +69,28 @@ resource "aws_efs_file_system" "efs" {
   encrypted        = "true"
 }
 
+locals {
+  config = defaults(var.config, {
+    cluster_version     = "1.22"
+    api_allowed_ips     = "0.0.0.0/0"
+    efs_enabled         = false
+    ssh_enabled         = false
+    ssh_security_groups = ""
+  })
 
-
-resource "aws_efs_mount_target" "efs-mt" {
+/* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
   for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   subnet_id       = each.key
-}
+} */
 
+resource "aws_efs_mount_target" "this" {
+  count           = var.enable_efs ? 1 : 0
+  security_groups = [aws_security_group.efs[0].id]
+  file_system_id  = aws_efs_file_system.this[0].id
+  subnet_id       = local.config.aws_private_subnets[count.index]
+}
 
 resource "aws_security_group" "efs" {
   count       = var.enable_efs ? 1 : 0
