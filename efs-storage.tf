@@ -45,7 +45,7 @@ resource "helm_release" "efs_csi_driver" {
 
   set {
     name  = "image.repository"
-    value = "602401143452.dkr.ecr.eu-central-1.amazonaws.com/eks/aws-efs-csi-driver"
+    value = "602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-efs-csi-driver"
   }
   set {
     name  = "controller.serviceAccount.create"
