@@ -74,7 +74,7 @@ resource "aws_efs_file_system" "efs" {
 resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
-  for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
+  for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   subnet_id       = each.key
 }
 
