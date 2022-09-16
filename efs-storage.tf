@@ -76,7 +76,7 @@ resource "aws_efs_mount_target" "efs-mt" {
 resource "aws_security_group" "efs" {
   name        = "efs-sg"
   description = "Allows inbound EFS traffic"
-  vpc_id      = var.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     from_port       = 2049
