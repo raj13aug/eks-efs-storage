@@ -49,11 +49,11 @@ resource "helm_release" "efs_csi_driver" {
   }
   set {
     name  = "controller.serviceAccount.create"
-    value = "true"
+    value = "false"
   }
   set {
     name  = "controller.serviceAccount.name"
-    value = "efs-csi-driver" #kubernetes_service_account.efs_csi_driver[0].metadata[0].name
+    value = kubernetes_service_account.efs_csi_driver[0].metadata[0].name
   }
 
 }
@@ -68,7 +68,9 @@ resource "aws_efs_file_system" "efs" {
   encrypted        = "true"
 }
 
-resource "aws_efs_mount_target" "efs-mt" {
+
+
+/* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
   for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
@@ -100,4 +102,4 @@ resource "aws_security_group_rule" "example" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.efs[0].id
   security_group_id        = module.eks.node_security_group_id
-}
+} */
