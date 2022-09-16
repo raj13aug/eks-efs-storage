@@ -55,10 +55,7 @@ variable "cluster_enabled_log_types" {
   default     = []
 }
 
-variable "cluster_fqdn" {
-  description = "FQDN of the EKS cluster"
-  type        = string
-}
+
 
 variable "cluster_version" {
   description = "Desired kubernetes version. If you do not specify a value, the latest available version is used"
