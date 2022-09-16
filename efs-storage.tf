@@ -71,13 +71,9 @@ resource "aws_efs_file_system" "efs" {
 
 locals {
   config = defaults(var.config, {
-    cluster_version     = "1.22"
-    api_allowed_ips     = "0.0.0.0/0"
-    efs_enabled         = false
-    ssh_enabled         = false
-    ssh_security_groups = ""
+    aws_private_subnets = ["172.16.0.0/24", "172.16.1.0/24", "172.16.2.0/24"]
+    aws_public_subnets  = ["172.16.3.0/24", "172.16.4.0/24", "172.16.5.0/24"]
   })
-
 }
 
 /* resource "aws_efs_mount_target" "efs-mt" {
