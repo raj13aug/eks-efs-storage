@@ -33,7 +33,6 @@ resource "kubernetes_service_account" "efs_csi_driver" {
 }
 
 resource "helm_release" "efs_csi_driver" {
-  count      = var.enable_efs ? 1 : 0
   name       = "aws-efs-csi-driver"
   chart      = "aws-efs-csi-driver"
   repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver"
