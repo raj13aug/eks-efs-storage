@@ -57,6 +57,8 @@ resource "helm_release" "efs_csi_driver" {
 
 }
 
+
+
 # add efs file system with mount points
 
 resource "aws_efs_file_system" "efs" {
@@ -69,7 +71,7 @@ resource "aws_efs_file_system" "efs" {
 
 
 
-/* resource "aws_efs_mount_target" "efs-mt" {
+resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
   for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
@@ -101,4 +103,4 @@ resource "aws_security_group_rule" "example" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.efs[0].id
   security_group_id        = module.eks.node_security_group_id
-} */
+}
