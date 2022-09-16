@@ -7,9 +7,6 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
-    tls = {
-      source = "hashicorp/tls"
-    }
   }
   required_version = ">= 1.0.1"
 }
