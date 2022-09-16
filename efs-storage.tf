@@ -78,6 +78,8 @@ locals {
     ssh_security_groups = ""
   })
 
+}
+
 /* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
