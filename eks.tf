@@ -53,14 +53,14 @@ module "eks" {
 
   enable_irsa = true
 
-  create_cluster_security_group = false
-  create_node_security_group    = false
+  create_cluster_security_group = true
+  create_node_security_group    = true
 
 
   eks_managed_node_groups = {
     initial = {
       instance_types                        = ["t3.medium"]
-      create_security_group                 = false
+      create_security_group                 = true
       attach_cluster_primary_security_group = true
 
       min_size     = 1
