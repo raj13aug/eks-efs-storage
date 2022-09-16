@@ -27,3 +27,10 @@ variable "azs" {
   type    = list(string)
   default = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
+
+variable "enable_efs" {
+  # if true, needs to add a K8S StorageClass, see https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html#efs-sample-app
+  description = "If true, creates an EFS based storage to support ReadWriteMany volume claims"
+  default     = true
+  type        = bool
+}
