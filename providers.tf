@@ -19,7 +19,7 @@ provider "helm" {
 }
 
 
-provider "helm" {
+/* provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
@@ -30,7 +30,7 @@ provider "helm" {
       args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
     }
   }
-}
+} */
 
 provider "kubectl" {
   apply_retry_count      = 5
