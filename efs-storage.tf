@@ -53,7 +53,7 @@ resource "helm_release" "efs_csi_driver" {
   }
   set {
     name  = "controller.serviceAccount.name"
-    value = kubernetes_service_account.efs_csi_driver[0].metadata[0].name
+    value = "efs-csi-driver" #kubernetes_service_account.efs_csi_driver[0].metadata[0].name
   }
 
 }
