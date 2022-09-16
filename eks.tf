@@ -28,6 +28,20 @@ module "vpc" {
   }
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Create the cluster's KMS key
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_kms_key" "eks_kms_key" {
+  description             = "${var.cluster_fqdn} Amazon EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+resource "aws_kms_alias" "eks" {
+  name          = "alias/${local.cluster_name}"
+  target_key_id = aws_kms_key.eks_kms_key.key_id
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Create the EKS cluster
