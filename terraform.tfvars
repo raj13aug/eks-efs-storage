@@ -1,7 +1,7 @@
 
 aws_assume_role = "arn:aws:iam::932999788441:role/eks-admin"
 
-
+cluster_fqdn    = "i2.robofarming.link"
 cluster_version = "1.22"
 
 aws_vpc_cidr        = "172.16.0.0/21"

@@ -74,3 +74,8 @@ variable "enable_efs" {
   default     = true
   type        = bool
 }
+
+variable "cluster_fqdn" {
+  description = "FQDN of the EKS cluster"
+  type        = string
+}
