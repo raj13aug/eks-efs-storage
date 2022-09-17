@@ -79,11 +79,3 @@ variable "cluster_fqdn" {
   description = "FQDN of the EKS cluster"
   type        = string
 }
-
-
-/* variable "config" {
-  type = object({
-    aws_private_subnets = list(string)
-    aws_public_subnets  = list(string)
-  })
-} */

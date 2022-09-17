@@ -76,19 +76,22 @@ resource "aws_efs_file_system" "efs" {
   })
 } */
 
-resource "aws_efs_mount_target" "efs-mt" {
+/* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
   for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   subnet_id       = each.key
+} */
+
+
+resource "aws_efs_mount_target" "efs-mt" {
+  count           = length(var.aws_public_subnets)
+  file_system_id  = aws_efs_file_system.efs[0].id
+  subnet_id       = var.aws_public_subnets[count.index]
+  security_groups = [aws_security_group.efs[0].id]
 }
 
-/* resource "aws_efs_mount_target" "this" {
-  count           = var.enable_efs ? 1 : 0
-  security_groups = [aws_security_group.efs[0].id]
-  file_system_id  = aws_efs_file_system.this[0].id
-  subnet_id       = local.config.aws_private_subnets[count.index]
-} */
+
 
 resource "aws_security_group" "efs" {
   count       = var.enable_efs ? 1 : 0
