@@ -79,15 +79,23 @@ resource "aws_efs_file_system" "efs" {
 /* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
   security_groups = [aws_security_group.efs[0].id]
-  for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
+  for_each        =  { for subnet in var.aws_private_subnets : subnet => true } var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   subnet_id       = each.key
 } */
 
 
-resource "aws_efs_mount_target" "efs-mt" {
+/* resource "aws_efs_mount_target" "efs-mt" {
   count           = length(var.aws_public_subnets)
   file_system_id  = aws_efs_file_system.efs[0].id
   subnet_id       = var.aws_public_subnets[count.index]
+  security_groups = [aws_security_group.efs[0].id]
+} */
+
+resource "aws_efs_mount_target" "efs-mt" {
+  // This doesn't work if the VPC is being created where this module is called. Needs work
+  for_each        = { for subnet in var.aws_public_subnets : subnet => true }
+  file_system_id  = aws_efs_file_system.efs[0].id
+  subnet_id       = each.key
   security_groups = [aws_security_group.efs[0].id]
 }
 
