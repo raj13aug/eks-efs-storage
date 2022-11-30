@@ -122,7 +122,7 @@ resource "aws_security_group_rule" "efs_sg_egress" {
   from_port                = 2049
   to_port                  = 2049
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.efs[0].id
+  source_security_group_id = aws_security_group.efs_sg_ingress[0].id
   security_group_id        = module.eks.node_security_group_id
 }
 
@@ -131,5 +131,5 @@ resource "aws_efs_mount_target" "efs_mount_target" {
   count           = 3
   file_system_id  = aws_efs_file_system.efs.id
   subnet_id       = module.vpc.public_subnet[count.index].id
-  security_groups = [aws_security_group.efs[0].id]
+  security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
