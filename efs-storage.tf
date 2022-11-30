@@ -91,17 +91,15 @@ resource "aws_efs_file_system" "efs" {
   security_groups = [aws_security_group.efs[0].id]
 } */
 
-resource "aws_efs_mount_target" "efs-mt" {
+/* resource "aws_efs_mount_target" "efs-mt" {
   // This doesn't work if the VPC is being created where this module is called. Needs work
   for_each        = { for subnet in var.aws_public_subnets : subnet => true }
   file_system_id  = aws_efs_file_system.efs[0].id
   subnet_id       = each.key
   security_groups = [aws_security_group.efs[0].id]
-}
+} */
 
-
-
-resource "aws_security_group" "efs" {
+resource "aws_security_group" "efs_sg_ingress" {
   count       = var.enable_efs ? 1 : 0
   name        = "efs-sg"
   description = "Allows inbound EFS traffic"
@@ -111,18 +109,27 @@ resource "aws_security_group" "efs" {
     from_port       = 2049
     to_port         = 2049
     protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
     security_groups = [module.eks.node_security_group_id]
   }
 
 }
 
-resource "aws_security_group_rule" "example" {
-  count                    = var.enable_efs ? 1 : 0
-  description              = "Allow outbound EFS traffic"
-  type                     = "egress"
-  from_port                = 2049
-  to_port                  = 2049
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.efs[0].id
-  security_group_id        = module.eks.node_security_group_id
+resource "aws_security_group_rule" "efs_sg_egress" {
+  count       = var.enable_efs ? 1 : 0
+  description = "Allow outbound EFS traffic"
+  type        = "egress"
+  from_port   = 2049
+  to_port     = 2049
+  protocol    = "tcp"
+  #source_security_group_id = aws_security_group.efs[0].id
+  security_group_id = module.eks.node_security_group_id
+}
+
+
+resource "aws_efs_mount_target" "efs_mount_target" {
+  count           = 3
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = module.vpc.public_subnet[count.index].id
+  security_groups = [aws_security_group.efs[0].id]
 }
