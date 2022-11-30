@@ -129,7 +129,7 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 
 resource "aws_efs_mount_target" "efs_mount_target" {
   for_each        = toset(var.aws_public_subnets)
-  file_system_id  = aws_efs_file_system.efs[count.index]
+  file_system_id  = aws_efs_file_system.efs[0].id
   subnet_id       = each.value
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
