@@ -128,8 +128,8 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 
 
 resource "aws_efs_mount_target" "efs_mount_target" {
-  count           = 3
-  file_system_id  = aws_efs_file_system.efs[count.index]
-  subnet_id       = module.vpc.public_subnet[count.index].id
+  for_each        = toset(var.aws_public_subnets)
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = each.value
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
