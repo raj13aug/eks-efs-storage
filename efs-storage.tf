@@ -3,6 +3,7 @@
 # add efs_csi_driver
 
 module "efs_csi_driver_irsa_role" {
+  count   = var.enable_efs ? 1 : 0
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "4.20.1"
 
@@ -18,6 +19,7 @@ module "efs_csi_driver_irsa_role" {
 }
 
 resource "kubernetes_service_account" "efs_csi_driver" {
+  count = var.enable_efs ? 1 : 0
   metadata {
     name      = "efs-csi-driver"
     namespace = "kube-system"
@@ -33,6 +35,7 @@ resource "kubernetes_service_account" "efs_csi_driver" {
 }
 
 resource "helm_release" "efs_csi_driver" {
+  count      = var.enable_efs ? 1 : 0
   name       = "aws-efs-csi-driver"
   chart      = "aws-efs-csi-driver"
   repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver"
@@ -59,6 +62,7 @@ resource "helm_release" "efs_csi_driver" {
 # add efs file system with mount points
 
 resource "aws_efs_file_system" "efs" {
+  count            = var.enable_efs ? 1 : 0
   creation_token   = "efs-staging"
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
