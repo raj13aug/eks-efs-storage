@@ -100,6 +100,7 @@ resource "aws_efs_file_system" "efs" {
 } */
 
 resource "aws_security_group" "efs_sg_ingress" {
+  count       = var.enable_efs ? 1 : 0
   name        = "efs-sg"
   description = "Allows inbound EFS traffic"
   vpc_id      = module.vpc.vpc_id
@@ -115,6 +116,7 @@ resource "aws_security_group" "efs_sg_ingress" {
 }
 
 resource "aws_security_group_rule" "efs_sg_egress" {
+  count                    = var.enable_efs ? 1 : 0
   description              = "Allow outbound EFS traffic"
   type                     = "egress"
   from_port                = 2049
