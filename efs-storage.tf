@@ -135,13 +135,13 @@ data "aws_subnet_ids" "app_subnet" {
   }
 }
 
-resource "aws_efs_mount_target" "master_mt" {
+/* resource "aws_efs_mount_target" "master_mt" {
   file_system_id  = aws_efs_file_system.master_efs.id
   count           = length(var.availability_zones)
   subnet_id       = data.aws_subnet.app_subnet.ids[count.index]
   security_groups = ["${aws_security_group.sg.id}"]
 }
-
+ */
 
 
 /* resource "aws_efs_mount_target" "efs_mount_target" {
