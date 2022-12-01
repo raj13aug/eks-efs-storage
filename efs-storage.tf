@@ -128,9 +128,9 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 
 
 resource "aws_efs_mount_target" "efs_mount_target" {
-  for_each        = toset(var.aws_private_subnets)
+  for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   file_system_id  = aws_efs_file_system.efs[0].id
-  subnet_id       = each.value
+  subnet_id       = each.key
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
 
