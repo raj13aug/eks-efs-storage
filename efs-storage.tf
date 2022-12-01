@@ -161,7 +161,7 @@ data "aws_subnet_ids" "app_subnet" {
 
 resource "aws_efs_mount_target" "efs_mount_target" {
   count           = 3
-  file_system_id  = aws_efs_file_system.efs.id
+  file_system_id  = aws_efs_file_system.efs[count.index].id
   subnet_id       = module.vpc.public_subnets[count.index].id
-  security_groups = [aws_security_group.efs_sg_ingress.id]
+  security_groups = [aws_security_group.efs_sg_ingress[count.index].id]
 }
