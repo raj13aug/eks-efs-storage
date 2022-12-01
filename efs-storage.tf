@@ -133,3 +133,10 @@ resource "aws_efs_mount_target" "efs_mount_target" {
   subnet_id       = each.value
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
+
+/* resource "aws_efs_mount_target" "efs-mt" {
+  file_system_id  = aws_efs_file_system.efs[0].id
+  security_groups = [aws_security_group.efs_sg_ingress[0].id]
+  for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
+  subnet_id       = each.key
+} */
