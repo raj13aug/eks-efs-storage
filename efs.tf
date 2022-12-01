@@ -30,7 +30,7 @@ resource "kubernetes_service_account" "efs_csi_driver" {
   }
 }
 
-resource "helm_release" "efs_csi_driver" {
+/* resource "helm_release" "efs_csi_driver" {
   name       = "aws-efs-csi-driver"
   chart      = "aws-efs-csi-driver"
   repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver"
@@ -50,7 +50,7 @@ resource "helm_release" "efs_csi_driver" {
     value = kubernetes_service_account.efs_csi_driver[0].metadata[0].name
   }
 
-}
+} */
 
 
 resource "aws_efs_file_system" "efs" {
