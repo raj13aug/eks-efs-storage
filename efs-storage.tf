@@ -127,13 +127,13 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 }
 
 
-data "aws_subnet_ids" "app_subnet" {
+/* data "aws_subnet_ids" "app_subnet" {
   vpc_id = data.aws_vpc.cng.id
 
   tags = {
     Name = "${var.search_pattern_app}"
   }
-}
+} */
 
 /* resource "aws_efs_mount_target" "master_mt" {
   file_system_id  = aws_efs_file_system.master_efs.id
