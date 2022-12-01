@@ -168,19 +168,19 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 
 
 resource "aws_efs_mount_target" "subnet_0" {
-  file_system_id  = aws_efs_file_system.efs[count.index]
+  file_system_id  = aws_efs_file_system.efs[0]
   subnet_id       = "172.16.3.0/24"
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
 }
 
 resource "aws_efs_mount_target" "subnet_1" {
-  file_system_id  = aws_efs_file_system.efs[count.index]
+  file_system_id  = aws_efs_file_system.efs[1]
   subnet_id       = "172.16.4.0/24"
   security_groups = [aws_security_group.efs_sg_ingress[1].id]
 }
 
 resource "aws_efs_mount_target" "subnet_2" {
-  file_system_id  = aws_efs_file_system.efs[count.index]
+  file_system_id  = aws_efs_file_system.efs[2]
   subnet_id       = "172.16.5.0/24"
   security_groups = [aws_security_group.efs_sg_ingress[2].id]
 }
