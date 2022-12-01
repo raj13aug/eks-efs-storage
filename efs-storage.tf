@@ -127,12 +127,29 @@ resource "aws_security_group_rule" "efs_sg_egress" {
 }
 
 
-resource "aws_efs_mount_target" "efs_mount_target" {
+data "aws_subnet_ids" "app_subnet" {
+  vpc_id = data.aws_vpc.cng.id
+
+  tags = {
+    Name = "${var.search_pattern_app}"
+  }
+}
+
+resource "aws_efs_mount_target" "master_mt" {
+  file_system_id  = aws_efs_file_system.master_efs.id
+  count           = length(var.availability_zones)
+  subnet_id       = data.aws_subnet.app_subnet.ids[count.index]
+  security_groups = ["${aws_security_group.sg.id}"]
+}
+
+
+
+/* resource "aws_efs_mount_target" "efs_mount_target" {
   for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
   file_system_id  = aws_efs_file_system.efs[0].id
   subnet_id       = each.key
   security_groups = [aws_security_group.efs_sg_ingress[0].id]
-}
+} */
 
 /* resource "aws_efs_mount_target" "efs-mt" {
   file_system_id  = aws_efs_file_system.efs[0].id
@@ -140,3 +157,11 @@ resource "aws_efs_mount_target" "efs_mount_target" {
   for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
   subnet_id       = each.key
 } */
+
+
+resource "aws_efs_mount_target" "efs_mount_target" {
+  count           = 3
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = module.vpc.public_subnets[count.index].id
+  security_groups = [aws_security_group.efs_sg_ingress.id]
+}
