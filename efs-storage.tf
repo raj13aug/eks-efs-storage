@@ -69,35 +69,28 @@ resource "aws_efs_file_system" "efs" {
   encrypted        = "true"
 }
 
-/* locals {
-  config = defaults(var.config, {
-    aws_private_subnets = ["172.16.0.0/24", "172.16.1.0/24", "172.16.2.0/24"]
-    aws_public_subnets  = ["172.16.3.0/24", "172.16.4.0/24", "172.16.5.0/24"]
-  })
-} */
 
-/* resource "aws_efs_mount_target" "efs-mt" {
-  file_system_id  = aws_efs_file_system.efs[0].id
-  security_groups = [aws_security_group.efs[0].id]
-  for_each        =  { for subnet in var.aws_private_subnets : subnet => true } var.enable_efs ? toset(var.aws_private_subnets) : toset([])
-  subnet_id       = each.key
-} */
+data "aws_subnet_ids" "public" {
+  vpc_id = module.vpc
+  tags = {
+    Tier = "public"
+  }
+}
 
+data "aws_subnet_ids" "private" {
+  vpc_id = module.vpc
+  tags = {
+    Tier = "private"
+  }
+}
 
-/* resource "aws_efs_mount_target" "efs-mt" {
-  count           = length(var.aws_public_subnets)
-  file_system_id  = aws_efs_file_system.efs[0].id
-  subnet_id       = var.aws_public_subnets[count.index]
-  security_groups = [aws_security_group.efs[0].id]
-} */
+resource "aws_efs_mount_target" "efs_csi_driver" {
+  count = length(data.aws_subnet_ids.private.ids)
 
-/* resource "aws_efs_mount_target" "efs-mt" {
-  // This doesn't work if the VPC is being created where this module is called. Needs work
-  for_each        = { for subnet in var.aws_public_subnets : subnet => true }
-  file_system_id  = aws_efs_file_system.efs[0].id
-  subnet_id       = each.key
-  security_groups = [aws_security_group.efs[0].id]
-} */
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = element(tolist(data.aws_subnet_ids.private.ids), count.index)
+  security_groups = [aws_security_group.efs_sg_ingress.id]
+}
 
 resource "aws_security_group" "efs_sg_ingress" {
   count       = var.enable_efs ? 1 : 0
@@ -125,62 +118,3 @@ resource "aws_security_group_rule" "efs_sg_egress" {
   source_security_group_id = aws_security_group.efs_sg_ingress[0].id
   security_group_id        = module.eks.node_security_group_id
 }
-
-
-/* data "aws_subnet_ids" "app_subnet" {
-  vpc_id = data.aws_vpc.cng.id
-
-  tags = {
-    Name = "${var.search_pattern_app}"
-  }
-} */
-
-/* resource "aws_efs_mount_target" "master_mt" {
-  file_system_id  = aws_efs_file_system.master_efs.id
-  count           = length(var.availability_zones)
-  subnet_id       = data.aws_subnet.app_subnet.ids[count.index]
-  security_groups = ["${aws_security_group.sg.id}"]
-}
- */
-
-
-/* resource "aws_efs_mount_target" "efs_mount_target" {
-  for_each        = var.enable_efs ? toset(var.aws_private_subnets) : toset([])
-  file_system_id  = aws_efs_file_system.efs[0].id
-  subnet_id       = each.key
-  security_groups = [aws_security_group.efs_sg_ingress[0].id]
-} */
-
-/* resource "aws_efs_mount_target" "efs-mt" {
-  file_system_id  = aws_efs_file_system.efs[0].id
-  security_groups = [aws_security_group.efs_sg_ingress[0].id]
-  for_each        = var.enable_efs ? toset(var.private_subnets) : toset([])
-  subnet_id       = each.key
-} */
-
-
-/* resource "aws_efs_mount_target" "efs_mount_target" {
-  count           = 3
-  file_system_id  = aws_efs_file_system.efs[count.index].id
-  subnet_id       = module.vpc.public_subnets[count.index].id
-  security_groups = [aws_security_group.efs_sg_ingress[count.index].id]
-} */
-
-
-/* resource "aws_efs_mount_target" "subnet_0" {
-  file_system_id  = aws_efs_file_system.efs[0]
-  subnet_id       = "172.16.3.0/24"
-  security_groups = [aws_security_group.efs_sg_ingress[0].id]
-}
-
-resource "aws_efs_mount_target" "subnet_1" {
-  file_system_id  = aws_efs_file_system.efs[1]
-  subnet_id       = "172.16.4.0/24"
-  security_groups = [aws_security_group.efs_sg_ingress[1].id]
-}
-
-resource "aws_efs_mount_target" "subnet_2" {
-  file_system_id  = aws_efs_file_system.efs[2]
-  subnet_id       = "172.16.5.0/24"
-  security_groups = [aws_security_group.efs_sg_ingress[2].id]
-} */
