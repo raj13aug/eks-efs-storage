@@ -62,7 +62,7 @@ resource "helm_release" "efs_csi_driver" {
 # add efs file system with mount points
 
 resource "aws_efs_file_system" "efs" {
-  count            = var.enable_efs ? 1 : 0
+  #count            = var.enable_efs ? 1 : 0
   creation_token   = "efs-staging"
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
@@ -80,12 +80,9 @@ resource "aws_efs_file_system" "efs" {
 
 
 resource "aws_efs_mount_target" "efs_target" {
-  for_each  = toset(split(",", var.aws_private_subnets))
-  subnet_id = each.value
-  #count = length(module.vpc.private_subnets)
-
-  file_system_id = aws_efs_file_system.efs.id
-  #subnet_id       = element(module.vpc.private_subnets, count.index)
+  count           = length(module.vpc.private_subnets)
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = element(module.vpc.private_subnets, count.index)
   security_groups = [aws_security_group.xac_airflow_efs_sg.id]
 }
 
