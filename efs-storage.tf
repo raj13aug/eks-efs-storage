@@ -70,51 +70,35 @@ resource "aws_efs_file_system" "efs" {
 }
 
 
-data "aws_subnet_ids" "public" {
-  vpc_id = module.vpc
-  tags = {
-    Tier = "public"
-  }
-}
-
-data "aws_subnet_ids" "private" {
-  vpc_id = module.vpc
-  tags = {
-    Tier = "private"
-  }
-}
-
-resource "aws_efs_mount_target" "efs_csi_driver" {
-  count = length(data.aws_subnet_ids.private.ids)
-
+# EFS Mount Targets
+resource "aws_efs_mount_target" "xac-airflow-efs-mt" {
+  count           = length(data.aws_availability_zones.available.names)
   file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = element(tolist(data.aws_subnet_ids.private.ids), count.index)
-  security_groups = [aws_security_group.efs_sg_ingress.id]
+  subnet_id       = module.vpc.private_subnets[count.index]
+  security_groups = [aws_security_group.xac_airflow_efs_sg.id]
 }
 
-resource "aws_security_group" "efs_sg_ingress" {
-  count       = var.enable_efs ? 1 : 0
-  name        = "efs-sg"
-  description = "Allows inbound EFS traffic"
+resource "aws_security_group" "xac_airflow_efs_sg" {
+  name        = "xac_airflow_efs"
+  description = "Allows inbound efs traffic from EKS"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port       = 2049
-    to_port         = 2049
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
-    security_groups = [module.eks.node_security_group_id]
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = [module.vpc.vpc_cidr_block, "172.16.0.0/21"]
   }
 
-}
+  # fix from https://github.com/aws-samples/aws-eks-accelerator-for-terraform/commit/e6b364d87221eb481d8e93b08bb9597c1e22bf3e
+  #
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
 
-resource "aws_security_group_rule" "efs_sg_egress" {
-  count                    = var.enable_efs ? 1 : 0
-  description              = "Allow outbound EFS traffic"
-  type                     = "egress"
-  from_port                = 2049
-  to_port                  = 2049
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.efs_sg_ingress[0].id
-  security_group_id        = module.eks.node_security_group_id
+    cidr_blocks = [module.vpc.vpc_cidr_block, "172.16.0.0/21"]
+  }
+
+  tags = "group"
 }

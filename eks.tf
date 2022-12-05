@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # VPC
 # ---------------------------------------------------------------------------------------------------------------------
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -9,7 +10,7 @@ module "vpc" {
   name = local.vpc_name
   cidr = var.aws_vpc_cidr
 
-  azs             = ["${var.aws_default_region}a", "${var.aws_default_region}b", "${var.aws_default_region}c"]
+  azs             = data.aws_availability_zones.available.names #["${var.aws_default_region}a", "${var.aws_default_region}b", "${var.aws_default_region}c"]
   private_subnets = var.aws_private_subnets
   public_subnets  = var.aws_public_subnets
 
