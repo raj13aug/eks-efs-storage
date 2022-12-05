@@ -26,7 +26,7 @@ resource "kubernetes_service_account" "efs_csi_driver" {
       "app.kubernetes.io/name"      = "efs-csi-driver"
     }
     annotations = {
-      "eks.amazonaws.com/role-arn"               = module.efs_csi_driver_irsa_role[0].iam_role_arn
+      "eks.amazonaws.com/role-arn"               = module.efs_csi_driver_irsa_role.iam_role_arn
       "eks.amazonaws.com/sts-regional-endpoints" = "true"
     }
   }
