@@ -71,10 +71,19 @@ resource "aws_efs_file_system" "efs" {
 
 
 # EFS Mount Targets
-resource "aws_efs_mount_target" "xac-airflow-efs-mt" {
+/* resource "aws_efs_mount_target" "xac-airflow-efs-mt" {
   count           = length(data.aws_availability_zones.available.names)
   file_system_id  = aws_efs_file_system.efs.id
   subnet_id       = module.vpc.private_subnets[count.index]
+  security_groups = [aws_security_group.xac_airflow_efs_sg.id]
+} */
+
+
+resource "aws_efs_mount_target" "efs_target" {
+  count = length(module.vpc.private_subnets)
+
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = element(module.vpc.private_subnets, count.index)
   security_groups = [aws_security_group.xac_airflow_efs_sg.id]
 }
 
