@@ -19,7 +19,7 @@ module "efs_csi_driver_irsa_role" {
 
 resource "kubernetes_service_account" "efs_csi_driver" {
   metadata {
-    name      = "efs-csi-driver-new"
+    name      = "efs-csi-driver"
     namespace = "kube-system"
     labels = {
       "app.kubernetes.io/component" = "driver"
