@@ -120,7 +120,7 @@ resource "kubernetes_storage_class_v1" "efs_storage_class" {
   }
   storage_provisioner = "efs.csi.aws.com"
   reclaim_policy      = "Delete"
-  volume_binding_mode = "Immediate"
+  volume_binding_mode = "WaitForFirstConsumer"
   parameters = {
     "provisioningMode" = "efs-ap"
     "fileSystemId"     = aws_efs_file_system.efs.id
