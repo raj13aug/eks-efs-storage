@@ -3,7 +3,6 @@
 # add efs_csi_driver
 
 module "efs_csi_driver_irsa_role" {
-  count   = var.enable_efs ? 1 : 0
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "4.20.1"
 
@@ -19,7 +18,6 @@ module "efs_csi_driver_irsa_role" {
 }
 
 resource "kubernetes_service_account" "efs_csi_driver" {
-  count = var.enable_efs ? 1 : 0
   metadata {
     name      = "efs-csi-driver"
     namespace = "kube-system"
@@ -56,7 +54,36 @@ resource "kubernetes_service_account" "efs_csi_driver" {
 
 } */
 
+resource "helm_release" "efs_csi_driver" {
 
+  name = "efs-csi-driver"
+
+  namespace       = "kube-system"
+  cleanup_on_fail = true
+  force_update    = false
+
+  chart = "https://github.com/kubernetes-sigs/aws-efs-csi-driver/releases/download/helm-chart-aws-efs-csi-driver-2.2.7/aws-efs-csi-driver-2.2.7.tgz"
+
+  set {
+    name  = "image.repository"
+    value = "602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-efs-csi-driver"
+  }
+
+  set {
+    name  = "controller.serviceAccount.create"
+    value = "false"
+  }
+
+  set {
+    name  = "controller.serviceAccount.name"
+    value = kubernetes_service_account.efs_csi_driver.metadata.0.name #kubernetes_service_account_v1.efs_csi_service_account.metadata.0.name
+  }
+
+  depends_on = [
+    aws_efs_mount_target.efs_target
+  ]
+
+}
 
 # add efs file system with mount points
 
