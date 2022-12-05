@@ -99,6 +99,4 @@ resource "aws_security_group" "xac_airflow_efs_sg" {
 
     cidr_blocks = [module.vpc.vpc_cidr_block, "172.16.0.0/21"]
   }
-
-  tags = "group"
 }
