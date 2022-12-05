@@ -80,10 +80,12 @@ resource "aws_efs_file_system" "efs" {
 
 
 resource "aws_efs_mount_target" "efs_target" {
-  count = length(module.vpc.private_subnets)
+  for_each  = toset(split(",", var.aws_private_subnets))
+  subnet_id = each.value
+  #count = length(module.vpc.private_subnets)
 
-  file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = element(module.vpc.private_subnets, count.index)
+  file_system_id = aws_efs_file_system.efs.id
+  #subnet_id       = element(module.vpc.private_subnets, count.index)
   security_groups = [aws_security_group.xac_airflow_efs_sg.id]
 }
 
