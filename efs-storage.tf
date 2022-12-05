@@ -32,28 +32,6 @@ resource "kubernetes_service_account" "efs_csi_driver" {
   }
 }
 
-/* resource "helm_release" "efs_csi_driver" {
-  name       = "aws-efs-csi-driver"
-  chart      = "aws-efs-csi-driver"
-  repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver"
-  version    = "2.2.5"
-  namespace  = "kube-system"
-
-  set {
-    name  = "image.repository"
-    value = "602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-efs-csi-driver"
-  }
-  set {
-    name  = "controller.serviceAccount.create"
-    value = "false"
-  }
-  set {
-    name  = "controller.serviceAccount.name"
-    value = kubernetes_service_account.efs_csi_driver[0].metadata[0].name
-  }
-
-} */
-
 resource "helm_release" "efs_csi_driver" {
 
   name = "efs-csi-driver"
@@ -76,7 +54,7 @@ resource "helm_release" "efs_csi_driver" {
 
   set {
     name  = "controller.serviceAccount.name"
-    value = kubernetes_service_account.efs_csi_driver.metadata.0.name #kubernetes_service_account_v1.efs_csi_service_account.metadata.0.name
+    value = kubernetes_service_account.efs_csi_driver.metadata.0.name
   }
 
   depends_on = [
