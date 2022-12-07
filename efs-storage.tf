@@ -6,13 +6,13 @@ module "efs_csi_driver_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "4.20.1"
 
-  role_name             = "efs-csi-driver"
+  role_name             = "efs-csi-driver-sa"
   attach_efs_csi_policy = true
 
   oidc_providers = {
     ex = {
       provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:efs-csi-driver"]
+      namespace_service_accounts = ["kube-system:efs-csi-driver-sa"]
     }
   }
 }
@@ -64,7 +64,7 @@ resource "helm_release" "efs_csi_driver" {
 
   set {
     name  = "node.serviceAccount.name"
-    value = "aws-efs-csi-driver-sa"
+    value = "efs-csi-driver-sa"
   }
 
   set {
@@ -157,7 +157,7 @@ resource "aws_iam_role" "eks_efs_driver_role" {
          "Action": "sts:AssumeRoleWithWebIdentity",
          "Condition": {
            "StringEquals": {
-             "oidc.eks.us-east-1.amazonaws.com/id/${basename(module.eks.oidc_provider_arn)}:sub": "system:serviceaccount:kube-system:aws-efs-csi-driver-sa"
+             "oidc.eks.us-east-1.amazonaws.com/id/${basename(module.eks.oidc_provider_arn)}:sub": "system:serviceaccount:kube-system:efs-csi-driver-sa"
            }
          }
        }
