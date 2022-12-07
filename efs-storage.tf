@@ -96,8 +96,8 @@ resource "aws_security_group" "xac_airflow_efs_sg" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port   = 0
-    to_port     = 0
+    from_port   = 2049
+    to_port     = 2049
     protocol    = "tcp"
     cidr_blocks = [module.vpc.vpc_cidr_block]
   }
