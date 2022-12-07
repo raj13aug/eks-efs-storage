@@ -2,7 +2,7 @@
 
 # add efs_csi_driver
 
-module "efs_csi_driver_irsa_role" {
+/* module "efs_csi_driver_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "4.20.1"
 
@@ -15,9 +15,9 @@ module "efs_csi_driver_irsa_role" {
       namespace_service_accounts = ["kube-system:efs-csi-driver"]
     }
   }
-}
+} */
 
-resource "kubernetes_service_account" "efs_csi_driver" {
+/* resource "kubernetes_service_account" "efs_csi_driver" {
   metadata {
     name      = "efs-csi-driver"
     namespace = "kube-system"
@@ -30,7 +30,7 @@ resource "kubernetes_service_account" "efs_csi_driver" {
       "eks.amazonaws.com/sts-regional-endpoints" = "true"
     }
   }
-}
+} */
 
 resource "helm_release" "efs_csi_driver" {
 
@@ -49,12 +49,17 @@ resource "helm_release" "efs_csi_driver" {
 
   set {
     name  = "controller.serviceAccount.create"
-    value = "false"
+    value = "true"
   }
 
   set {
     name  = "controller.serviceAccount.name"
-    value = kubernetes_service_account.efs_csi_driver.metadata.0.name
+    value = "aws-efs-csi-driver-sa"
+  }
+
+  set {
+    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.eks_efs_driver_role.arn #kubernetes_service_account.efs_csi_driver.metadata.0.name
   }
 
   set {
@@ -64,7 +69,7 @@ resource "helm_release" "efs_csi_driver" {
 
   set {
     name  = "node.serviceAccount.name"
-    value = "efs-csi-driver"
+    value = "aws-efs-csi-driver-sa"
   }
 
   set {
@@ -157,7 +162,7 @@ resource "aws_iam_role" "eks_efs_driver_role" {
          "Action": "sts:AssumeRoleWithWebIdentity",
          "Condition": {
            "StringEquals": {
-             "oidc.eks.us-east-1.amazonaws.com/id/${basename(module.eks.oidc_provider_arn)}:sub": "system:serviceaccount:kube-system:efs-csi-driver"
+             "oidc.eks.us-east-1.amazonaws.com/id/${basename(module.eks.oidc_provider_arn)}:sub": "system:serviceaccount:kube-system:aws-efs-csi-driver-sa"
            }
          }
        }
